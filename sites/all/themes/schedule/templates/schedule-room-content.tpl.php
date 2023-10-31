@@ -13,7 +13,7 @@ if (!empty($room['events'])) {
   <div class="room-event<?php print isset($current['started']) ? $current['started'] : ''; ?>">
     <?php if (!empty($current['start'])): ?>
     <div class="block-d">
-      <div class="line2"><?php print empty($current['description']) ? $current['title'] : $current['description']; ?></div>
+      <div class="line1"><?php print empty($current['description']) ? $current['title'] : $current['description']; ?></div>
       <div class="line3"><?php print $current['start'] . ' - ' . $current['finish']; ?></div>
     </div>
     <div class="block-m">

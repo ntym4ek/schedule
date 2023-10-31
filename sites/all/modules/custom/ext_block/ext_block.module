@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+function ext_block_block_info()
+{
+  return [
+    'custom-block-dumb' => [                            // по какой-то причине, если индекс содержит _ вместо - блок виден в базовой теме, но НЕ виден в подтеме.
+      'info' => 'CB | Пустая заглушка для сайдборда',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ext_block_block_view($delta = '')
+{
+  $block = [];
+
+if (strpos($delta, 'custom-block-') === 0) {
+    $block['content'] = theme($delta);
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ext_block_theme()
+{
+  return [
+    'custom-block-dumb'      => [
+      'variables' => [],
+      'template' => 'templates/block-dumb',
+    ],
+  ];
+}

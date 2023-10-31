@@ -71,7 +71,7 @@ h6, .h6 { font-size: $font-size-h6; font-weight: 500; margin: 1rem 0; }
     }
     .site-name {
       font-size: .85em;
-      max-width: 200px;
+      max-width: 90%;
       margin: 0 auto;
     }
   }
@@ -145,6 +145,7 @@ h6, .h6 { font-size: $font-size-h6; font-weight: 500; margin: 1rem 0; }
   box-shadow: none;
   position: absolute; top: 45px; left: 0; right: 0; z-index: 10;
   padding: 0;
+  height: 75px;
   .container { padding: 0 1rem; }
   .header-wr {
     display: flex;
@@ -179,22 +180,18 @@ h6, .h6 { font-size: $font-size-h6; font-weight: 500; margin: 1rem 0; }
       flex: 1 0 auto;
       padding-left: 0;
     }
-    .logo { flex: 0 0 41px; }
+    //.logo { flex: 0 0 41px; }
   }
   .menu-bkg {
-    display: grid; justify-content: flex-end;
-    background: rgba(27, 30, 40, 0.4);
+    display: grid; justify-content: flex-end; align-content: center;
+    background: $header-bkg;
     height: 100%;
     position: relative;
   }
   .menu-wr {
     display: flex; align-items: center;
     height: 100%;
-    .global {
-      flex: 0 0 auto;
-      padding: 0 2rem;
-      a { color: #fff; }
-    }
+    padding-left: 2rem;
     .primary-menu { flex: 1 0 auto; }
     .secondary-menu { flex: 0 0 auto; }
     .icon-user { width: 1rem; }
@@ -202,11 +199,7 @@ h6, .h6 { font-size: $font-size-h6; font-weight: 500; margin: 1rem 0; }
   .menu {
     font-size: $font-size-large;
     &.level-1 > li {
-      margin: 0 1rem;
-      > a {
-        color: #fff; font-weight: 500;
-        padding: .8rem 1rem .8rem 0;
-      }
+      > a { color: #fff; font-weight: 500; }
     }
   }
 

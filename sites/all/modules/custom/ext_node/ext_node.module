@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * Implements hook_menu_alter()
+ */
+function ext_node_menu_alter(&$items)
+{
+  // убрать материалы с Главной
+  $items['node']['page callback'] = 'ext_node_empty_front_page_callback';
+
+  // "Удалить" в локальные задачи материала
+  // http://xandeadx.ru/blog/drupal/339
+  $items['node/%node/delete']['context'] = MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE;
+}
+
+/**
+ * menu callback
+ * убрать материалы с главной
+ */
+function ext_node_empty_front_page_callback()
+{
+  drupal_set_title('');
+  return array();
+}
+
+
+/**
+ * hook_form_FORM_ID_alter
+ */
+function ext_node_form_room_event_node_form_alter(&$form, $form_state)
+{
+  // дополнить названия Комнат значением Этажа
+  // допустимые значения для поля Этаж
+  $field_floor_allowed_values = list_allowed_values(field_info_field('field_floor'));
+  // перебор опций
+  foreach ($form['field_room']['und']['#options'] as $tid => $option) {
+    if (is_numeric($tid)) {
+      $query = db_select('field_data_field_floor', 'fr');
+      $query->condition('fr.entity_id', $tid);
+      $query->addField('fr', 'field_floor_value');
+      if ($floor = $query->execute()->fetchField()) {
+        $form['field_room']['und']['#options'][$tid] .= ', ' .  $field_floor_allowed_values[$floor];
+      }
+    }
+  }
+
+  if (!user_has_role(ADMIN_RID)) {
+    $form["field_1c_id"]["#access"] = false;
+  }
+
+  $form['actions']['submit']['#submit'][] = 'ext_node_form_room_event_node_form_submit';
+
+  // подключаем к форме редактирования и создания элемента расписания виджета выбора даты-времени
+  // https://xdan.ru/samij-udobnij-datetimepicker.html
+  // версия js из статьи выдавала ошибку,
+  // поэтому взят файл из https://github.com/xdan/datetimepicker/issues/471
+  $form['#attached']['css'][] = drupal_get_path('theme', 'schedule') . '/css/jquery.datetimepicker.css';
+  $form['#attached']['js'][] = drupal_get_path('theme', 'schedule') . '/js/jquery.datetimepicker.js';
+  $form['#attached']['js'][] = drupal_get_path('theme', 'schedule') . '/js/schedule.forms.js';
+}
+
+function ext_node_form_room_event_node_form_submit($form, &$form_state)
+{
+  $form_state['redirect'] = '/schedule';
+}

@@ -4,7 +4,7 @@ $sh-column-b-width: 25%;
 $sh-block-header-height: 25%;
 
 html {
-    @media only screen                          and (max-width : 767px)  { font-size: 2px!important; }
+    @media only screen                          and (max-width : 767px)  { font-size: 3px!important; }
     @media only screen and (min-width : 768px)  and (max-width : 1023px) { font-size: 5px!important; }
     @media only screen and (min-width : 1024px) and (max-width : 1279px) { font-size: 5px!important; }
     @media only screen and (min-width : 1280px) and (max-width : 1439px) { font-size: 6px!important; }
@@ -28,7 +28,6 @@ html {
     display: flex; flex-direction: column;
     margin: 0 $gutter/2;
     overflow: hidden;
-    //&.disabled { opacity: .8; }
     .header {
       background: $brand-blue;
       flex: 0 0 10rem;
@@ -60,7 +59,8 @@ html {
         color: white;
         position: absolute; right: 1rem; top: 1rem;
         transition: all 0.3s ease-in-out;
-        i { font-size: 3rem; }
+        padding: 1rem;
+        i { font-size: 5rem; }
       }
     }
     .content {
@@ -76,7 +76,8 @@ html {
         //&.started { color: #f9f100; }
         .edit-link {
           color: white;
-          position: absolute; right: 10px; top: 10px;
+          position: absolute; right: -2.5rem;
+          padding: 1.5rem;
           transition: all 0.3s ease-in-out;
         }
       }
@@ -222,30 +223,32 @@ html {
     }
   }
   .room-content {
-    flex: 0 0 85%;
+    flex: 1 0 auto;
     display: flex; flex-direction: column;
     height: 100%;
   }
   .room-event {
     background: $brand-blue;
     color: white;
-    display: flex; justify-content: space-between;
+    display: flex; justify-content: space-between; align-items: center;
     flex: 0 0 18%;
     padding: 3rem 9rem;
     position: relative;
-    .block {
-      flex: 0 1 auto;
-      display: flex; flex-wrap: wrap; align-content: space-around;
-      div { flex: 100%; }
-    }
+    //.block {
+    //  flex: 0 1 auto;
+    //  display: flex; flex-wrap: wrap; align-content: space-around;
+    //  div { flex: 100%; }
+    //}
+    .block-d { padding-right: 6rem; }
     .block-m {
       flex: 0 0 auto;
       display: flex;
-      align-items: center;
+      text-align: center;
+      max-width: 35%;
     }
     .live,
     .free {
-      color: white; font-size: 6rem; font-weight: 700;
+      color: white; font-size: 5rem; font-weight: 700;
       padding: 1rem 4rem;
     }
     .live {

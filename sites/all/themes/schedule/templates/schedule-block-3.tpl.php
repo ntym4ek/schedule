@@ -15,7 +15,7 @@
                         <div class="line1"><?php print $event['title']; ?></div>
                         <div class="line2"><?php print $event['description']; ?></div>
                     </div>
-                    <?php if ($content['admin']): ?><a href="/node/<?php print $eid; ?>/edit" class="edit-link"><i class="fas fa-pen"></i></a><?php endif; ?>
+                    <?php if ($content['admin']): ?><a href="/node/<?php print $event['eid']; ?>/edit" class="edit-link"><i class="fas fa-pen"></i></a><?php endif; ?>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>

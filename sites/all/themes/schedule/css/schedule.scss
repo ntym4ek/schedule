@@ -11,3 +11,27 @@ body {
   .page-schedule { overflow: hidden; }
 }
 
+.node-form {
+  padding-bottom: 4rem;
+  .tabledrag-toggle-weight-wrapper { display: none; }
+  .date-form-element-content-multiline {
+    border: none;
+    display: flex;
+    padding: 0;
+    .date-no-float { width: initial; }
+    .date-padding {
+      label,
+      .description { display: none; }
+      input { max-width: 200px; }
+    }
+    .end-date-wrapper {
+      label {
+        margin-right: 1rem;
+        .form-required { display: none; }
+      }
+      .form-type-date-text {
+        display: flex; align-items: center;
+      }
+    }
+  }
+}

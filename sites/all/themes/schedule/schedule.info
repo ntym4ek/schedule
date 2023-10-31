@@ -5,7 +5,7 @@ base theme = cbtheme
 
 
 stylesheets[all][] = css/schedule.css
-stylesheets[all][] = fonts/font-awesome/fontawesome.css
+stylesheets[all][] = fonts/font-awesome/css/all.css
 
 # scripts[] = js/schedule.js
 

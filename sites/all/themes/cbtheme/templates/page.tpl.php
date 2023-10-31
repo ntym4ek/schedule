@@ -3,8 +3,12 @@
 <div class="page-wrapper">
 
   <div class="nav-mobile">
-    <div class="logo">
-      <img src="<?php print $logo; ?>" />
+    <div class="branding">
+      <div class="logo"><a href="/"><img src="/sites/all/themes/cbtheme/images/logo/logo_t.png" alt="KCCC GROUP" /></a></div>
+      <div class="brand">
+        <div class="company"><a href="/">KCCC GROUP</a></div>
+        <div class="site-name"><a href="/"><?php print $site_name; ?></a></div>
+      </div>
     </div>
     <?php if (isset($search_form) && $is_mobile): ?>
       <div class="search hide-lg">
@@ -29,7 +33,7 @@
                   <div class="company"><a href="/">KCCC GROUP</a></div>
                   <div class="site-name"><a href="/"><?php print $site_name; ?></a></div>
                 </div>
-                <div class="logo"><a href="/"><img src="/sites/all/themes/cbtheme/images/logo/logo_t.png" alt="Кирово-Чепецкая Химическая&nbsp;Компания" /></a></div>
+                <div class="logo"><a href="/"><img src="/sites/all/themes/cbtheme/images/logo/logo_t.png" alt="KCCC GROUP" /></a></div>
               </div>
             </div>
             <div class="col col-2 full-height col-no-gutter">
@@ -37,11 +41,6 @@
                 <div class="nav-mobile-label hide-lg"><div class="label"><div class="icon"></div></div></div>
                 <div class="hide-xs show-lg">
                   <div class="menu-wr">
-                    <div class="global">
-                      <a href="https://kccc.group" target="_blank" title="KCCC GROUP">
-                        <i class="icon icon-119"></i>
-                      </a>
-                    </div>
                     <div class="primary-menu">
                       <?php if ($primary_nav): print $primary_nav; endif; ?>
                     </div>

@@ -976,7 +976,7 @@ h6, .h6 {
       margin: 0 0 .1em; }
     .branding .brand .site-name {
       font-size: .85em;
-      max-width: 200px;
+      max-width: 90%;
       margin: 0 auto; }
 
 .container {
@@ -1000,7 +1000,7 @@ h6, .h6 {
   .page > .header {
     display: flex;
     align-items: center;
-    background: #F8F7F4;
+    background: rgba(27, 30, 40, 0.4);
     min-height: 4rem; }
     .page > .header .branding {
       display: flex;
@@ -1041,7 +1041,8 @@ h6, .h6 {
   left: 0;
   right: 0;
   z-index: 10;
-  padding: 0; }
+  padding: 0;
+  height: 75px; }
   .page > .header .container {
     padding: 0 1rem; }
   .page > .header .header-wr {
@@ -1076,23 +1077,18 @@ h6, .h6 {
     .page > .header .branding .brand {
       flex: 1 0 auto;
       padding-left: 0; }
-    .page > .header .branding .logo {
-      flex: 0 0 41px; }
   .page > .header .menu-bkg {
     display: grid;
     justify-content: flex-end;
+    align-content: center;
     background: rgba(27, 30, 40, 0.4);
     height: 100%;
     position: relative; }
   .page > .header .menu-wr {
     display: flex;
     align-items: center;
-    height: 100%; }
-    .page > .header .menu-wr .global {
-      flex: 0 0 auto;
-      padding: 0 2rem; }
-      .page > .header .menu-wr .global a {
-        color: #fff; }
+    height: 100%;
+    padding-left: 2rem; }
     .page > .header .menu-wr .primary-menu {
       flex: 1 0 auto; }
     .page > .header .menu-wr .secondary-menu {
@@ -1101,12 +1097,9 @@ h6, .h6 {
       width: 1rem; }
   .page > .header .menu {
     font-size: 1.25rem; }
-    .page > .header .menu.level-1 > li {
-      margin: 0 1rem; }
-      .page > .header .menu.level-1 > li > a {
-        color: #fff;
-        font-weight: 500;
-        padding: .8rem 1rem .8rem 0; }
+    .page > .header .menu.level-1 > li > a {
+      color: #fff;
+      font-weight: 500; }
   @media only screen and (min-width: 768px) {
     .page > .header .branding {
       width: 300px;
@@ -1757,18 +1750,14 @@ ul.menu {
   padding-left: 1rem; }
 
 .nav-mobile-label {
-  background: #F8F7F4;
+  background: none;
   border-radius: 2px;
   display: block;
-  color: #7D7C7C;
   font-size: 4rem;
   width: 4rem;
   height: 4rem;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
   transition: all 200ms ease-in;
+  position: relative;
   overflow: hidden; }
   .nav-mobile-label .label {
     display: flex;
@@ -1780,7 +1769,7 @@ ul.menu {
     .nav-mobile-label .label .icon,
     .nav-mobile-label .label .icon:before,
     .nav-mobile-label .label .icon:after {
-      background-color: #7D7C7C;
+      background-color: #fff;
       border-radius: 5px;
       transition-duration: 0.2s;
       position: absolute;
@@ -1812,22 +1801,18 @@ ul.menu {
   flex-direction: column;
   flex-wrap: nowrap;
   overflow-y: scroll; }
-  .nav-mobile .logo {
-    display: flex;
+  .nav-mobile .branding {
+    padding: 3rem 0;
     flex-direction: column;
-    align-items: center;
     color: #fff;
-    font-size: 1.5rem;
-    padding: 3rem 0; }
-    .nav-mobile .logo img {
-      max-width: 50%;
-      max-height: 100px;
-      padding-bottom: 1.5rem; }
-    .nav-mobile .logo span {
-      display: inline-block;
-      text-align: center;
-      line-height: 1.1;
-      max-width: 80%; }
+    text-align: center; }
+    .nav-mobile .branding a {
+      color: inherit; }
+    .nav-mobile .branding .logo {
+      height: 80px;
+      margin-bottom: 1.5rem; }
+    .nav-mobile .branding .company {
+      font-weight: 500; }
   .nav-mobile .menu-mobile-wr {
     display: flex;
     flex-direction: column;
@@ -1869,5 +1854,28 @@ body {
   height: 100%; }
   body .page-schedule {
     overflow: hidden; }
+
+.node-form {
+  padding-bottom: 4rem; }
+  .node-form .tabledrag-toggle-weight-wrapper {
+    display: none; }
+  .node-form .date-form-element-content-multiline {
+    border: none;
+    display: flex;
+    padding: 0; }
+    .node-form .date-form-element-content-multiline .date-no-float {
+      width: initial; }
+    .node-form .date-form-element-content-multiline .date-padding label,
+    .node-form .date-form-element-content-multiline .date-padding .description {
+      display: none; }
+    .node-form .date-form-element-content-multiline .date-padding input {
+      max-width: 200px; }
+    .node-form .date-form-element-content-multiline .end-date-wrapper label {
+      margin-right: 1rem; }
+      .node-form .date-form-element-content-multiline .end-date-wrapper label .form-required {
+        display: none; }
+    .node-form .date-form-element-content-multiline .end-date-wrapper .form-type-date-text {
+      display: flex;
+      align-items: center; }
 
 /*# sourceMappingURL=schedule.css.map */
