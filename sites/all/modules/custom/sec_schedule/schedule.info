@@ -1,0 +1,5 @@
+name = Раздел Расписание
+description = Расписание для комнат переговоров
+version = 7.x-1.0
+core = 7.x
+package = Custom

@@ -1,0 +1,13 @@
+// переменные Базовой темы
+@import "../../cbtheme/css/variables";
+// переменные Текущей темы
+@import "variables";
+// стили Базовой темы
+@import "../../cbtheme/css/styles";
+
+
+body {
+  height: 100%;
+  .page-schedule { overflow: hidden; }
+}
+

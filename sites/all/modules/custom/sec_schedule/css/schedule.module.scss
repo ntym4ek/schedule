@@ -1,0 +1,306 @@
+@import "../../../../themes/schedule/css/variables"; // продублировано из styles.scss, чтобы переменные не подсвечивались
+
+$sh-column-b-width: 25%;
+$sh-block-header-height: 25%;
+
+html {
+    @media only screen                          and (max-width : 767px)  { font-size: 2px!important; }
+    @media only screen and (min-width : 768px)  and (max-width : 1023px) { font-size: 5px!important; }
+    @media only screen and (min-width : 1024px) and (max-width : 1279px) { font-size: 5px!important; }
+    @media only screen and (min-width : 1280px) and (max-width : 1439px) { font-size: 6px!important; }
+    @media only screen and (min-width : 1440px)                          { font-size: 8px!important; }
+}
+
+.group {
+  flex: auto;
+  display: flex;
+  margin-top: $gutter;
+  height: 100%; max-height: 100%;
+}
+
+.schedule {
+  background: white;
+  height: 100%;
+  overflow: hidden;
+
+  .room-block {
+    flex: auto;
+    display: flex; flex-direction: column;
+    margin: 0 $gutter/2;
+    overflow: hidden;
+    //&.disabled { opacity: .8; }
+    .header {
+      background: $brand-blue;
+      flex: 0 0 10rem;
+      color: white;
+      padding: 1rem;
+      display: flex; flex-wrap: nowrap;
+      position: relative;
+      .box1 {
+        border-right: 1px solid white;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 6rem;
+        flex: 0 0 6rem;
+        padding-right: 1rem;
+        a { color: white; }
+      }
+      .box2 {
+        display: flex; align-items: center; flex-wrap: wrap;
+        font-size: 3rem;
+        flex: auto;
+        padding: 0 2rem;
+        div { flex: 100%; }
+        a { color: white; }
+      }
+      .line1 { line-height: 1.2; }
+      .line1 span,
+      .line2 { font-weight: 100; white-space: nowrap; }
+      .line3 { position: absolute; top: 0; right: 0; bottom: 0; }
+      .add-link {
+        color: white;
+        position: absolute; right: 1rem; top: 1rem;
+        transition: all 0.3s ease-in-out;
+        i { font-size: 3rem; }
+      }
+    }
+    .content {
+      background: $brand-green;
+      flex: auto;
+      color: white; font-size: 2rem;
+      padding: 4rem;
+      max-height: 100%;
+      .event {
+        display: flex;
+        position: relative;
+        &:not(:last-child) { margin-bottom: 1rem; }
+        //&.started { color: #f9f100; }
+        .edit-link {
+          color: white;
+          position: absolute; right: 10px; top: 10px;
+          transition: all 0.3s ease-in-out;
+        }
+      }
+    }
+  }
+
+  .block-f {
+    flex: 1 0 auto;
+  }
+  .block-l {
+    flex: 0 0 auto;
+    .content {
+      display: flex; flex-direction: column; justify-content: flex-end;
+      width: 18rem;
+      padding: 0;
+    }
+    .logo {
+      text-align: center;
+      width: 100%; height: 10rem;
+      img { max-height: 100%; }
+    }
+  }
+
+  .clock {
+    color: $text-muted; font-weight: 500; font-size: 4rem; text-align: center;
+    flex: 0 0 auto;
+    line-height: 1;
+    margin-top: 1rem;
+    .seconds {
+      color: $text-muted; font-size: 2rem; font-weight: 400; text-align: left;
+      display:inline-block;
+      margin-left: .5rem; width: 2.5rem;
+    }
+  }
+}
+
+.summary {
+    display: flex; flex-wrap: wrap; align-content: flex-start;
+    height: 100%; max-width: 100%;
+  .header {
+    flex: 100%;
+    height: 20rem;
+    display: flex;
+    padding: 4rem 9rem 2rem;
+    .group { margin: 0; }
+    .block {
+      margin: 0;
+      .content {
+        color: #333;
+        background: white;
+        display: flex;
+      }
+      .event {
+        display: flex; align-items: center;
+        flex: 0 0 auto;
+        margin-right: 10rem;
+      }
+      .row1 { flex: auto; }
+      .line1 { font-size: 6rem; line-height: 1; }
+      .line2 { font-size: 4rem; white-space: nowrap; }
+      .row2 {
+        display: flex;
+        font-size: 10rem;
+        flex: 0 0 auto;
+        padding-left: 2rem;
+        i.fa-long-arrow-alt-left {
+          overflow: hidden;
+          width: 5rem;
+        }
+        i.fa-running,
+        i.fa-walking { margin-left: 1rem; }
+        i.fa-running {
+          animation: blinker 2s linear infinite;
+          @keyframes blinker {
+            50% { opacity: 0; }
+          }
+        }
+      }
+    }
+  }
+    .column-a,
+    .column-b {
+        .content {
+            .row1 {
+                flex: 0 0 1px;
+                font-size: 4rem;
+                justify-content: center;
+                padding-right: 2rem;
+            }
+            .row2 { flex: auto; }
+            .line1 { font-weight: 500; font-size: 4rem; }
+            .line2 { font-weight: 100; font-size: 3rem; }
+        }
+    }
+    .column-a {
+        flex: 100%-$sh-column-b-width;
+        display: flex;
+        flex-direction: column;
+        height: 85%;
+        .group {
+            flex: 50%;
+            .block {
+                height: 100%;
+                &:first-child { margin-left: 0; }
+            }
+        }
+        .group-a .block { flex: 50%; }
+        .group-b .block { flex: 33.3%; }
+    }
+    .column-b {
+        flex: $sh-column-b-width;
+        display: flex;
+        flex-direction: column;
+        height: 85%;
+        .block { margin-right: 0; }
+    }
+}
+
+.room {
+  display: flex; flex-direction: column;
+  height: 100%;
+  .line1 { font-size: 5rem; }
+  .line2 { font-size: 4rem; }
+  .line3 { font-size: 7rem; }
+  .block-wrap {
+    display: flex;
+  }
+
+  .room-header {
+    flex: 0 0 20rem;
+    position: relative;
+    padding: 4rem 9rem 2rem;
+    .block-wrap { height: 100%; }
+    .block-i {
+      flex: auto;
+      .line2 { color: $text-muted; }
+    }
+    .back {
+      color: #f0f0f0; font-size: 5rem;
+      position: absolute; top: 5rem; left: 1rem;
+      padding: 0 2rem;
+      transform: scale(1, 2.5);
+    }
+  }
+  .room-content {
+    flex: 0 0 85%;
+    display: flex; flex-direction: column;
+    height: 100%;
+  }
+  .room-event {
+    background: $brand-blue;
+    color: white;
+    display: flex; justify-content: space-between;
+    flex: 0 0 18%;
+    padding: 3rem 9rem;
+    position: relative;
+    .block {
+      flex: 0 1 auto;
+      display: flex; flex-wrap: wrap; align-content: space-around;
+      div { flex: 100%; }
+    }
+    .block-m {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+    }
+    .live,
+    .free {
+      color: white; font-size: 6rem; font-weight: 700;
+      padding: 1rem 4rem;
+    }
+    .live {
+      display: none;
+      background: $brand-red;
+    }
+    .free { background: $brand-green; }
+    &.started .live {
+      display: block;
+    }
+  }
+  .room-participants {
+    flex: 0 1 50%;
+    padding: 6rem 9rem;
+    .content {
+      display: flex; align-content: flex-start;
+      width: 100%;
+      .participant {
+        font-size: 4rem;
+        flex: 0 1 auto;
+        min-width: 30%;
+        .line1 {
+          color: $brand-blue;
+          margin-bottom: 15px;
+        }
+        span {
+          display: inline-block;
+          min-width: 50%;
+        }
+        &:nth-child(2) {
+          padding-left: 15px;
+        }
+      }
+    }
+  }
+  .room-footer {
+    background: $brand-green;
+    color: white;
+    flex: 0 0 32%;
+    padding: 3rem 9rem;
+    .b {
+      flex-wrap: wrap; align-content: flex-start;
+      flex: 0 0 50%;
+      margin-top: 15px;
+      div { flex: 100%; }
+    }
+    .line2 { margin-bottom: 5px; }
+    .line3 { font-size: 6rem; }
+  }
+
+  .block {
+    display: flex;
+    position: relative;
+  }
+
+}
+
+

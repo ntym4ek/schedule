@@ -1,0 +1,11 @@
+name = Schedule
+description = Тема на базе Custom Base Theme
+core = 7.x
+base theme = cbtheme
+
+
+stylesheets[all][] = css/schedule.css
+stylesheets[all][] = fonts/font-awesome/fontawesome.css
+
+# scripts[] = js/schedule.js
+

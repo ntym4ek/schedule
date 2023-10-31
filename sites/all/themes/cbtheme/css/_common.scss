@@ -1,0 +1,454 @@
+@import "variables"; // продублировано из styles.scss, чтобы переменные не подсвечивались
+
+@import url($font-url);
+
+html {
+  height: 100%;
+  font-size: 12px;
+  @media #{$smartphone} { font-size: 14px; }
+  @media #{$tablet}     { font-size: 15px; }
+  @media #{$laptop}     { font-size: 16px; }
+  @media #{$desktop}    { font-size: 16px; }
+}
+
+* {
+  box-sizing: border-box;
+  outline: 0 !important;
+}
+
+a { text-decoration: none; }
+
+body {
+  font-family: $font-name, Helvetica, Arial, sans-serif;
+  color: $text-color; line-height: 1.22;
+  background-color: $page-bkg;
+  overflow-y: scroll;
+  position: relative;
+  min-height: 100%;
+}
+
+h1, .h1 { font-size: $font-size-h1*.6; font-weight: 500; margin: 2rem 0 1rem; }
+h2, .h2 { font-size: $font-size-h2*.8; font-weight: 500; margin: 2rem 0 1rem; }
+h3, .h3 { font-size: $font-size-h3*.8; font-weight: 500; margin: 2rem 0 1rem; }
+h4, .h4 { font-size: $font-size-h4; font-weight: 500; margin: 1rem 0; }
+h5, .h5 { font-size: $font-size-h5; font-weight: 500; margin: 1rem 0; }
+h6, .h6 { font-size: $font-size-h6; font-weight: 500; margin: 1rem 0; }
+@media #{$tablet} {
+  h1, .h1 { font-size: $font-size-h1; font-weight: 700;  }
+  h2, .h2 { font-size: $font-size-h2; font-weight: 700;  }
+  h3, .h3 { font-size: $font-size-h3; font-weight: 700;  }
+  h4, .h4 { font-weight: 700; }
+  h5, .h5 { font-weight: 700; }
+  h6, .h6 { font-weight: 700; }
+}
+.h1, .h2, .h3, .h4, .h5, .h6 { margin: 0; }
+
+// растянуть блок на всю ширину экрана за рамки .container
+.screen-width {
+  position: relative;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  overflow: hidden;                                         // предотвращает выход margin за границы блока (схлопывание)
+}
+
+.branding {
+  display: flex; align-items: center;
+  padding: 1rem 0;
+  .logo {
+    flex: 0 0 auto;
+    height: 100%;
+    img {
+      display: block;
+      max-width: 100%; max-height: 100%;
+    }
+  }
+  .brand {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 1em;
+    .company {
+      font-size: 1.7em; font-weight: 700;
+      margin: 0 0 .1em;
+    }
+    .site-name {
+      font-size: .85em;
+      max-width: 200px;
+      margin: 0 auto;
+    }
+  }
+}
+
+// --- Разметка страницы --------------------------------------------------------------
+.container {
+  padding: 0 $gutter*2;
+  width: 100%;
+
+  &.full-height {
+    height: 100%;
+  }
+
+  @media #{$tablet} {
+    max-width: $content-well-max-width;
+    margin: 0 auto;
+  }
+  @media #{$laptop} {
+    padding: 0 $gutter;
+  }
+}
+
+.page {
+  display: flex; flex-direction: column;                    // прижать подвал
+  min-height: 100vh;                                        // при открытом меню подвал не прижимается к низу страницы
+  transition: all 200ms ease-in;
+
+  > .header {
+    display: flex; align-items: center;
+    background: $header-bkg;
+    min-height: $header-min-height;
+    .branding {
+      display: flex; justify-content: center;
+      text-align: center; line-height: 1;
+      max-height: 100%;
+      img { display: block; max-height: 100%; }
+    }
+
+    @media #{$tablet} {
+      .branding {
+        justify-content: start;
+        text-align: left;
+      }
+    }
+  }
+
+  > .main {
+    flex: 1 0 auto;
+    .messages {
+      margin: 1em 0;
+      p { margin: 0; }
+    }
+  }
+
+  > .footer {
+    background: $footer-bkg;
+    color: $footer-text;
+    padding: 1rem 0;
+    .container { height: 100%; }
+    .branding { height: 90px; }
+    .rights {
+      font-size: 1.1rem; text-align: right;
+    }
+  }
+}
+
+// -- висящий двойной header с лого и меню
+.page > .header {
+  background: none;
+  box-shadow: none;
+  position: absolute; top: 45px; left: 0; right: 0; z-index: 10;
+  padding: 0;
+  .container { padding: 0 1rem; }
+  .header-wr {
+    display: flex;
+    width: 100%; height: 100%;
+    &:before {
+      background-color: $brand-color;
+      content: "";
+      display: block;
+      flex: 1;
+      margin-right: -1px; // закрыть прозрачную полосу на макбуке
+    }
+    &:after {
+      background: rgba(27, 30, 40, 0.4);
+      content: "";
+      display: block;
+      flex: 1;
+    }
+  }
+  .col-1 {
+    flex: 0 0 auto;
+    padding-right: 30px;
+  }
+  .col-2 { flex: 1 0 auto; }
+
+  .branding {
+    background-color: $brand-color;
+    color: #fff; text-align: center;
+    height: 100%; width: 270px;                     // определяет ширину брендовой части меню
+    padding: 15px;
+    a { color: inherit; }
+    .brand {
+      flex: 1 0 auto;
+      padding-left: 0;
+    }
+    .logo { flex: 0 0 41px; }
+  }
+  .menu-bkg {
+    display: grid; justify-content: flex-end;
+    background: rgba(27, 30, 40, 0.4);
+    height: 100%;
+    position: relative;
+  }
+  .menu-wr {
+    display: flex; align-items: center;
+    height: 100%;
+    .global {
+      flex: 0 0 auto;
+      padding: 0 2rem;
+      a { color: #fff; }
+    }
+    .primary-menu { flex: 1 0 auto; }
+    .secondary-menu { flex: 0 0 auto; }
+    .icon-user { width: 1rem; }
+  }
+  .menu {
+    font-size: $font-size-large;
+    &.level-1 > li {
+      margin: 0 1rem;
+      > a {
+        color: #fff; font-weight: 500;
+        padding: .8rem 1rem .8rem 0;
+      }
+    }
+  }
+
+  @media #{$tablet} {
+    .branding {
+      width: 300px;
+      padding: 15px 30px;
+    }
+  }
+  @media #{$laptop} {
+    height: 90px;
+    .branding {
+      font-size: 18px;
+      padding: 15px 30px 15px 1rem;
+      width: 360px;
+      .logo { flex: 0 0 55px; }
+    }
+    .menu {
+      font-size: 18px;
+      .sub-menu {
+        border-left: 5px solid $brand-color;
+        min-width: 230px;
+      }
+    }
+    .menu-bkg { justify-content: normal; }
+  }
+}
+
+.page-margin {
+  min-height: 120px;
+  @media #{$tablet} {
+    min-height: 135px;
+  }
+  @media #{$laptop} {
+    min-height: 162px;
+  }
+}
+
+.page-highlighted {
+  .page-banner {
+    .screen-width {
+      background-size: cover; background-position: center;
+      height: 160px;
+    }
+    .container {
+      display: flex; align-items: flex-end;
+      position: relative;
+    }
+  }
+  .page-title {
+    color: #fff; text-shadow: 1px 1px 10px #666;
+  }
+  @media #{$tablet} {
+    .page-banner .screen-width { height: 350px; }
+  }
+}
+
+.page-content {
+  //padding-bottom: 2rem;  // внизу может стоять блок со screen-width и background и padding оставит белую полосу
+}
+
+// --- Закладки ------------------------------------------------------------------------
+ul.tabs.primary {
+  text-align: right;
+  margin: 2rem 0 1rem;
+  li {
+    a {
+      color: $text-color;
+      padding: 0.5em 1em;
+      line-height: 2em;
+    }
+    &.active a {
+      background: $page-bkg;
+      border-bottom: 1px solid $page-bkg;
+    }
+  }
+}
+ul.tabs.secondary {
+  border: none;
+  text-align: right;
+  padding: 0; margin: 0 0 2rem;
+  > li {
+    border: none;
+    padding: 0; margin-left: .5rem;
+    a {
+      display: inline-block;
+      background: $gray-lighter;
+      color: $text-color;
+      padding: .2rem 1rem;
+      transition: all 100ms;
+      &:hover,
+      &.active {
+        background: $brand-color;
+        border: none;
+        color: #fff;
+      }
+    }
+  }
+}
+
+// --- Breadcrumbs --------------------------------------------------------------------
+.breadcrumb {
+  color: $text-light; font-size: $font-size-small;
+  margin: $gutter*2 0;
+  a {
+    color: $text-light; text-decoration: none;
+    &:hover { color: $brand-color; }
+  }
+}
+
+// --- Блоки --------------------------------------------------------------------------
+.block {
+  margin-bottom: 2rem;
+  display: flow-root; // чтобы margin блока не схлопывался с margin контента (в слайдере с нижней пагинацией, например)
+  p:first-child { margin-top: 0; }
+  @media #{$laptop} {
+    p:last-child { margin-bottom: 0; }
+  }
+  // .page-content &:last-child { margin-bottom: 0; } // чаще блоки без фона и лучше удалять отступ для остальных индивидуально
+}
+
+// --- Views --------------------------------------------------------------------------
+.view {
+  margin-bottom: 2rem;
+  @media #{$tablet} {
+    margin-bottom: 4rem;
+  }
+}
+.views-exposed-form,
+.exposed-filters {
+  margin-bottom: 1rem;
+  .views-exposed-widgets,
+  .filters {
+    @include row();
+    @include top();
+  }
+  .filters {
+    float: none;
+    width: initial;
+  }
+  .views-exposed-widget,
+  .filters > .form-item {
+    @include col('xs', 12);
+    margin-bottom: 1rem;
+    label {
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    select, input { width: 100%; }
+  }
+
+  .views-exposed-widget {
+    display: flex; flex-wrap: wrap;
+    label { flex: 100%; }
+    .views-operator {
+      flex: 0 0 40%;
+      padding-right: 1rem;
+    }
+    .views-widget { flex: 1 0 60%; }
+  }
+  .views-exposed-widget,
+  .views-exposed-widget.views-widget-filter-type,                     // список материалов
+  .views-exposed-widget.views-widget-filter-status,                   // список материалов
+  .views-reset-button { @include col(); }
+
+  .views-exposed-widget.views-widget-filter-status { max-width: 180px; }
+
+  @media #{$tablet} {
+    .views-exposed-widget,
+    .filters > .form-item {
+      //@include col('md', 4);
+      @include col();
+      max-width: 33%;
+    }
+    .views-submit-button,
+    .views-reset-button { @include col(); }
+
+    .views-exposed-widget.views-widget-filter-type,
+    .views-exposed-widget.views-widget-filter-mail,
+    .views-exposed-widget.views-widget-filter-field_user_surname_value  { max-width: 270px; } // текстовые поля с size=30 слишком широки
+  }
+}
+
+// --- Ноды ---------------------------------------------------------------------------
+
+
+// --- Таблицы ------------------------------------------------------------------------
+table {
+  margin-bottom: 1rem;
+  width: 100%;
+  th {
+    font-weight: 500;
+    padding: .5rem;
+    border-top: 1px solid transparent;  border-left: 1px solid transparent;
+    &:last-child { border-right: 1px solid transparent; }
+  }
+  td {
+    border-top: 1px solid $text-muted;  border-left: 1px solid $text-muted;
+    font-size: $font-size-small;
+    padding: .5rem;
+    &:last-child { border-right: 1px solid $text-muted; }
+  }
+  tr:last-child td { border-bottom: 1px solid $text-muted; }
+}
+
+fieldset {
+  border-width: 1px;
+  padding: 1rem;
+}
+.field {
+  margin-bottom: 1rem;
+}
+
+// --- Закладки ------------------------------------------------------------------------
+.vertical-tabs {
+  ul.vertical-tabs-list li a {
+    color: inherit;
+    padding: .8rem;
+  }
+  strong { font-weight: 500; }
+  .summary {
+    color: $text-light; font-size: $font-size-base*.8;
+    margin-top: .5rem;
+  }
+  fieldset.vertical-tabs-pane {
+    padding: 1rem;
+    @media #{$tablet} {
+      padding: 1rem 2rem;
+    }
+  }
+}
+
+.horizontal-tabs {
+  ul.horizontal-tabs-list li a {
+    color: inherit;
+    padding: .4rem .8rem;
+  }
+  strong { font-weight: 500; }
+  fieldset.horizontal-tabs-pane {
+    padding: 1rem;
+    @media #{$tablet} {
+      padding: 1rem 2rem;
+    }
+  }
+}

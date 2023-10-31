@@ -1,0 +1,272 @@
+<?php
+
+const ROOM1 = 1;  // этаж 1, комната 1
+const ROOM2 = 3;  // этаж 1, комната 2
+const ROOM3 = 6;  // конференц
+const ROOM4 = 2;  // этаж 2, комната 1
+const ROOM5 = 4;  // этаж 2, комната 2
+const ROOM6 = 5; // лаборатория
+
+// время в минутах до начала и после начала
+// в течение которых выводить События в серую зону
+const TIME_TO_FOOTER = 15;
+
+
+/**
+ * Implements hook_init()
+ */
+function schedule_init()
+{
+  if (!$_GET['q']) drupal_init_path();
+
+  // отключаем кеширование определенных страниц
+  // и разрешаем доступ только с корп ip
+  if (arg(0) == 'schedule') {
+    $GLOBALS['conf']['cache'] = 0;
+    if (!in_array($GLOBALS["user"]->hostname, ['127.0.0.1', '77.72.142.170', '85.93.54.94', '188.170.106.46'])) {
+      watchdog('ip block', 'IP <pre>@v</pre>', array('@v' => $GLOBALS["user"]->hostname), WATCHDOG_INFO);
+      drupal_not_found();
+    }
+  }
+}
+
+/**
+ * Implements hook_cron()
+ */
+function schedule_cron()
+{
+  // выполнить импорт мероприятий
+  require_once drupal_get_path('module', 'schedule') . '/includes/import.schedule.inc';
+
+  schedule_process_incoming_files();
+}
+
+/**
+ * Implements hook_menu().
+ */
+function schedule_menu()
+{
+  $items['schedule'] = array(
+      'page callback' => 'schedule_page_callback',
+      'page arguments' => array(1),
+      'access callback' => true,
+      'type' => MENU_CALLBACK,
+  );
+  $items['schedule/room/%'] = array(
+      'page callback' => 'schedule_room_page_callback',
+      'page arguments' => array(2,3),
+      'access callback' => true,
+      'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter()
+ */
+function schedule_menu_alter(&$items)
+{
+  // убрать материалы с Главной
+  $items['node']['page callback'] = 'schedule_empty_front_page_callback';
+
+  // "Удалить" в локальные задачи материала
+  // http://xandeadx.ru/blog/drupal/339
+  $items['node/%node/delete']['context'] = MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE;
+}
+
+/**
+ * menu callback
+ * убрать материалы с главной
+ */
+function schedule_empty_front_page_callback()
+{
+  drupal_set_title('');
+  return [];
+}
+
+/**
+ * menu callback
+ */
+function schedule_room_page_callback($room_num, $ajax)
+{
+  $schedule = schedule_get_events_by_date(24 * 60);
+
+  if (isset($schedule[constant('ROOM' . $room_num)])) {
+    $room = $schedule[constant('ROOM' . $room_num)];
+  }
+
+  if ($ajax == 'ajax') {
+    $result = array(
+      '#type' => 'ajax',
+      '#commands' => [
+        ajax_command_invoke('.room-content', 'replaceWith', [theme('schedule_room_content', ['room' => $room])]),
+      ],
+    );
+    ajax_deliver($result);
+    drupal_exit();
+  } else {
+    return theme('schedule_room_page', ['room' => $room]);
+  }
+}
+
+/**
+ * menu callback
+ */
+function schedule_page_callback($ajax)
+{
+  if ($ajax == 'ajax') {
+    $content = schedule_get_events_by_date(TIME_TO_FOOTER);
+
+    $result = array(
+        '#type' => 'ajax',
+        '#commands' => [
+            ajax_command_invoke('.block-1', 'replaceWith', [theme('schedule_block_1', ['content' => $content])]),
+            ajax_command_invoke('.block-2', 'replaceWith', [theme('schedule_block_2', ['content' => $content])]),
+            ajax_command_invoke('.block-3', 'replaceWith', [theme('schedule_block_3', ['content' => $content])]),
+            ajax_command_invoke('.block-4', 'replaceWith', [theme('schedule_block_4', ['content' => $content])]),
+            ajax_command_invoke('.block-5', 'replaceWith', [theme('schedule_block_5', ['content' => $content])]),
+            ajax_command_invoke('.block-6', 'replaceWith', [theme('schedule_block_6', ['content' => $content])]),
+        ],
+    );
+    ajax_deliver($result);
+    drupal_exit();
+  } else {
+    return theme('schedule_page');
+  }
+}
+
+function schedule_get_events_by_date($closest_event_remain_time)
+{
+  $content = [
+    'admin' => user_has_role(MANAGER_RID),
+  ];
+
+  // допустимые значения для поля Этаж
+  $field_floor_allowed_values = list_allowed_values(field_info_field('field_floor'));
+
+  // массив комнат
+  if ($rooms = taxonomy_get_tree(taxonomy_vocabulary_machine_name_load('rooms')->vid, 0 ,null, true)) {
+    foreach ($rooms as $room) {
+      $content[$room->tid] = [
+        'title' => $room->name,
+        'floor' => $room->field_floor['und'][0]['value'],
+        'floor_text' => trim($field_floor_allowed_values[$room->field_floor['und'][0]['value']]),
+      ];
+    }
+  }
+
+  // выбрать все текущие или идущие события на сегодняшний день
+  $now = REQUEST_TIME;
+  if ($events = shedule_get_events_by_date($now, false)) {
+    foreach ($events as $eid => $event) {
+      $room_id = $event->field_room_tid;
+      if (!isset($content[$room_id]['events']) || count($content[$room_id]['events']) < 3) {
+        $content[$room_id]['events'][$event->field_period_value] = [
+          'eid' => $eid,
+          'title' => $event->title,
+          'description' => $event->body_value,
+          'start_unix' => $event->field_period_value,
+          'start' => date('H:i', $event->field_period_value),
+          'finish_unix' => $event->field_period_value2,
+          'finish' => date('H:i', $event->field_period_value2),
+          'started' => ($now > $event->field_period_value) ? ' started' : '',
+          'participants' => $event->field_participants,
+        ];
+      }
+    }
+
+    ksort($content[$room_id]['events']);
+  }
+
+  return $content;
+}
+
+/**
+ * hook_form_FORM_ID_alter
+ */
+function schedule_form_room_event_node_form_alter(&$form, $form_state)
+{
+  // дополнить названия Комнат значением Этажа
+      // допустимые значения для поля Этаж
+  $field_floor_allowed_values = list_allowed_values(field_info_field('field_floor'));
+      // перебор опций
+  foreach ($form['field_room']['und']['#options'] as $tid => $option) {
+      if (is_numeric($tid)) {
+          $query = db_select('field_data_field_floor', 'fr');
+          $query->condition('fr.entity_id', $tid);
+          $query->addField('fr', 'field_floor_value');
+          if ($floor = $query->execute()->fetchField()) {
+              $form['field_room']['und']['#options'][$tid] .= ', ' .  $field_floor_allowed_values[$floor];
+          }
+      }
+  }
+
+  $form['actions']['submit']['#submit'][] = 'schedule_form_room_event_node_form_submit';
+
+  // подключаем к форме редактирования и создания элемента расписания виджета выбора даты-времени
+  // https://xdan.ru/samij-udobnij-datetimepicker.html
+  // версия js из статьи выдавала ошибку,
+  // поэтому взят файл из https://github.com/xdan/datetimepicker/issues/471
+  $form['#attached']['css'][] = drupal_get_path('theme', 'schedule') . '/css/jquery.datetimepicker.css';
+  $form['#attached']['js'][] = drupal_get_path('theme', 'schedule') . '/js/jquery.datetimepicker.js';
+  $form['#attached']['js'][] = drupal_get_path('theme', 'schedule') . '/js/schedule.forms.js';
+}
+
+function schedule_form_room_event_node_form_submit($form, &$form_state)
+{
+  $form_state['redirect'] = '/schedule';
+}
+
+/**
+ * Вернуть события от заданной даты до конца дня
+ * @param $date - дата unix
+ * @param bool $all - все или за исключением прошедших
+ * @return array
+ */
+function shedule_get_events_by_date($date, $all = true)
+{
+    $query = db_select('node', 'n');
+    $query->condition('n.type', 'room_event');
+    $query->condition('n.status', 1);
+    $query->leftJoin('field_data_field_period', 'fp', 'fp.entity_id = n.nid');
+    $query->condition('fp.field_period_value2', $date, '>');
+    $query->condition('fp.field_period_value', strtotime('tomorrow 1am'), '<'); //
+    $query->leftJoin('field_data_body', 'fb', 'fb.entity_id = n.nid');
+    $query->leftJoin('field_data_field_room', 'fr', 'fr.entity_id = n.nid');
+    $query->fields('n', ['nid', 'title']);
+    $query->fields('fp', ['field_period_value', 'field_period_value2']);
+    $query->fields('fb', ['body_value']);
+    $query->fields('fr', ['field_room_tid']);
+    $query->orderBy('field_period_value');
+    if ($results = $query->execute()->fetchAllAssoc('nid')) {
+      foreach ($results as $eid => &$result) {
+        $query = db_select('field_data_field_participants', 'fp');
+        $query->condition('fp.entity_id', $result->nid);
+        $query->fields('fp', ['field_participants_value']);
+        $query->leftJoin('field_data_field_company', 'fc', 'fc.entity_id = fp.field_participants_value');
+        $query->fields('fc', ['field_company_value']);
+        $query->leftJoin('field_data_field_participants_list', 'fpl', 'fpl.entity_id = fp.field_participants_value');
+        $query->fields('fpl', ['field_participants_list_value']);
+        $result->field_participants = $query->execute()->fetchAllAssoc('field_participants_value');
+      }
+    }
+    return $results;
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function schedule_preprocess_page(&$vars)
+{
+  // сменить шаблон страницы на пустой,
+  // чтобы иметь возможность развернуться на весь экран
+  if (arg(0) == 'schedule') {
+    $vars['theme_hook_suggestions'][] = 'page__empty';
+    drupal_add_css(drupal_get_path('module', 'schedule') . '/css/schedule.module.css');
+    drupal_add_js(drupal_get_path('module', 'schedule') . '/js/schedule.autorefresh.js');
+
+    drupal_add_library('system', 'drupal.ajax');
+  }
+}
+

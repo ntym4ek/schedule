@@ -1,0 +1,323 @@
+<?php
+
+const ADMIN_RID = 3;
+const MANAGER_RID = 4;
+
+
+function ext_user_menu()
+{
+  // ссылка для добавления редактирования в блок меню пользователя
+  $items['user/edit'] = [
+    'title'            => 'Set password',
+    'page callback'    => 'ext_user_user_edit',
+    'access callback'  => 'ext_user_user_edit_access',
+    'type'             => MENU_LOCAL_TASK,
+  ];
+
+  return $items;
+}
+
+function ext_user_user_edit()
+{
+  drupal_goto('user/' . $GLOBALS['user']->uid . '/edit');
+}
+
+function ext_user_user_edit_access()
+{
+  return user_edit_access($GLOBALS['user']);
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function ext_user_menu_alter(&$items)
+{
+  // добавить ссылку на авторизацию в Меню пользователя
+  $items['user/login']['menu_name'] = 'user-menu';
+  $items['user/login']['type'] = MENU_NORMAL_ITEM;
+}
+
+/**
+ * Implements hook_module_implements_alter()
+ */
+function ext_user_module_implements_alter(&$implementations, $hook)
+{
+  // change hook execution order
+  // Name of the hook.
+  if (in_array($hook, ['form_alter'])) {
+    // хук ext_user выполнить последним
+    $module = 'ext_user';
+    if (isset($implementations[$module])) {
+      $group = $implementations[$module];
+      unset($implementations[$module]);
+      $implementations[$module] = $group;
+    }
+  }
+}
+
+function ext_user_preprocess_page(&$vars)
+{
+  if (arg(0) == 'user' && $GLOBALS['theme'] != 'seven') {
+    $vars['title'] = '';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ext_user_form_user_pass_alter(&$form, &$form_state)
+{
+  if (!user_has_role(ADMIN_RID)) {
+    $form['#prefix'] =  '<div class="user-auth-form-wrapper">';
+    $form['#prefix'] .=   '<h1>' . t('Password recovery') . '</h1>';
+    $form['#prefix'] .=   '<div class="user-links"><a href="/user/login">Вход</a> или <a href="/user/register">Регистрация</a></div>';
+    $form['#suffix'] =  '</div>';
+    $form['name']['#title'] = t('E-Mail');
+    $form["mail"]["#markup"] = t('The recovery link will be sent to E-Mail above.');
+    $form["actions"]["submit"]['#value'] = t('Submit');
+    $form["actions"]["submit"]['#attributes']['class'] = ['btn', 'btn-brand', 'btn-large', 'btn-full-wide'];
+
+    array_unshift($form['#submit'], 'ext_user_user_pass_submit');
+  }
+}
+
+function ext_user_user_pass_submit($form, $form_state)
+{
+  // перевести переменную с текстом сообщения при восстановлении пароля
+  if (variable_get('user_password_reset_text')) {
+    variable_set('user_password_reset_text', t(variable_get('user_password_reset_text')));
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ext_user_form_user_login_alter(&$form, &$form_state)
+{
+  // обёртка для темизации формы
+  $form['#prefix'] =  '<div class="user-auth-form-wrapper">';
+  $form['#prefix'] .=   '<h1>' . t('Log in') . '</h1>';
+  $form['#prefix'] .=   '<div class="user-links"><a href="/user/register">Регистрация</a> или <a href="/user/password">Восстановление пароля</a></div>';
+  $form['#suffix'] = '</div>';
+
+  // изменить вид полей
+  $form['name']['#title'] = t('E-Mail');
+  unset($form['name']['#description']);
+  $form["pass"]["#title"] = t('Password');
+  unset($form['pass']['#description']);
+
+  $form["actions"]["submit"]['#value'] = t('Submit');
+  $form["actions"]["submit"]['#attributes']['class'] = ['btn', 'btn-brand', 'btn-large', 'btn-full-wide'];
+
+  // обработчики
+  $form['name']['#element_validate'][] = 'ext_user_login_name_validate';
+}
+
+/**
+ * Аутентификауия по email и имени пользователя
+ * Form element validation
+ */
+function ext_user_login_name_validate($form, &$form_state)
+{
+  $user = ext_user_user_load_by_login($form_state['values']['name']);
+  if ($user->uid) {
+    $form_state['values']['name'] = $user->name;
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ext_user_form_user_register_form_alter(&$form, &$form_state)
+{
+  if ($GLOBALS['theme'] != 'seven') {
+    // убрать необязательные поля
+    $form['account']['name']['#type'] = 'hidden';
+    $form['account']['name']['#value'] = 'ext_user_' . user_password();
+
+    // изменить вид полей
+    $form['account']['mail']['#title'] = 'E-Mail';
+    unset($form['account']['mail']['#description']);
+    $form['account']['pass']['#title'] = 'Пароль';
+    $form['account']['pass']['#type'] = 'textfield';
+    unset($form['account']['pass']['#description']);
+
+    $form["profile_main"]["#type"] = 'container';
+
+    // менять название кнопки нельзя, (user.admin.inc строка 27 привязана к дефолтному названию)
+    //    $form["actions"]["submit"]['#value'] = t('Submit');
+    $form["actions"]["submit"]['#attributes']['class'] = ['btn', 'btn-brand', 'btn-large', 'btn-wide'];
+
+    $form["account"]["notify"]["#access"] = false;
+    $form["account"]["status"]["#access"] = false;
+    $form["admin_language"]["admin_language"]["#default_value"] = 'default';
+    $form["admin_language"]["#access"] = false;
+    $form["locale"]["#access"] = false;
+
+
+    // обёртка для темизации формы
+    $form['#prefix'] = '<div class="user-auth-form-wrapper">';
+    $form['#prefix'] .= '<h1>' . t('Register') . '</h1>';
+    $form['#prefix'] .= '<div class="user-links"><a href="/user/login">Вход</a> или <a href="/user/password">Восстановление пароля</a></div>';
+    $form['#suffix'] = '</div>';
+
+    $form["actions"]["#weight"] = 11;
+
+    // обработчики
+    $form['#validate'][] = 'ext_user_user_register_form_email_validate';
+    $form['#submit'][] = 'ext_user_user_register_form_submit';
+  }
+}
+
+/**
+ * Проверка E-mail на спам при регистрации
+ */
+function ext_user_user_register_form_email_validate($form, &$form_state)
+{
+  // отсеять нежелательные (спамерские) email
+  foreach(['!.*@.*\.us!s', '!.*@.*\.link!s', '!.*@.*\.co\.uk!s', '!.*@.*\.work!s', '!.*@.*\.website!s',
+            '!.*@.*\.app!s', '!.*@.*\.ltd!s', '!.*@.*\.net!s', '!.*@.*\.online!s', '!.*@.*\.store!s', '!.*@.*\.info!s',
+            '!.*@.*\.site!s', '!.*@.*\.gq!s', '!.*@.*\.network!s', '!.*@.*\.xyz!s', '!.*@.*\.cf!s', '!.*@.*\.club!s', '!.*@.*\.jokeray\.com!s', '!.*@.*\.dynainbox\.com!s'
+            , '!.*@.*\.mailsmail\.ru!s', '!.*@.*\.mailyaha\.ru!s', '!.*@.*\.aolmail\.fun!s', '!.*@.*\.osakass\.!s'] as $pattern) {
+    if (preg_match($pattern, $form_state['values']['mail'])) {
+      form_set_error('mail', t('Регистрация недоступна.'));
+    }
+  }
+}
+
+function ext_user_user_register_form_submit($form, &$form_state)
+{
+  // редирект
+  $form_state['redirect'] = 'user/login';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ext_user_form_user_profile_form_alter(&$form, &$form_state)
+{
+  if ($GLOBALS['theme'] != 'seven') {
+    if ($form["#user_category"] == 'account') {
+      // убрать поля
+      $form["locale"]["#access"] = false;
+      $form["mimemail"]["#access"] = false;
+      $form["account"]["name"]["#access"] = false;
+
+      // изменить вид полей
+      $form['account']['mail']['#title'] = 'E-Mail';
+      $form['account']['mail']['#disabled'] = true;
+      unset($form['account']['mail']['#description']);
+      $form["account"]["mail"]["#weight"] = -6;
+
+      if (user_own_account()) {
+        $form['account']['current_pass']['#prefix'] = '<div class="row"><div class="col-xs-12 col-md-6">';
+        $form['account']['current_pass']['#suffix'] = '</div>';
+        $form['account']['current_pass']['#title'] = 'Текущий пароль';
+        $form["account"]["current_pass"]["#description"] = 'Для смены пароля необходимо ввести старый пароль.';
+        $form["account"]["current_pass"]["#type"] = 'textfield';
+        $form["account"]["current_pass"]["#weight"] = -4;
+        $form['account']['pass']['#prefix'] = '<div class="col-xs-12 col-md-6">';
+        $form['account']['pass']['#suffix'] = '</div></div>';
+        $form['account']['pass']['#title'] = 'Новый пароль';
+        $form['account']['pass']['#type'] = 'textfield';
+        unset($form["account"]["pass"]["#description"]);
+
+        // не выводить статус
+        $form["account"]["status"]["#access"] = false;
+      } else {
+        // не выводить смену пароля
+        $form["account"]["current_pass"]["#access"] = false;
+        $form["account"]["pass"]["#access"] = false;
+      }
+    }
+  }
+
+}
+
+function ext_user_preprocess_menu_link(&$vars)
+{
+  if ($GLOBALS['theme'] != 'seven') {
+    if ($vars["element"]["#href"] == 'user' && user_is_logged_in() && $vars["element"]["#original_link"]["depth"] == 1) {
+      // сменить "Мой аккаунт" на Имя пользователя
+      $user_info = ext_user_get_user_info();
+      $vars["element"]["#title"] = $GLOBALS['user']->name;
+    }
+  }
+}
+
+/**
+ * Вернуть пользователя по указанному логину
+ */
+function ext_user_user_load_by_login($login)
+{
+  // Try loading by email.
+  if ($user = user_load_by_mail($login)) {
+    return $user;
+  }
+
+  // Try loading by username.
+  if ($user = user_load_by_name($login)) {
+    return $user;
+  }
+  return user_load(0);
+}
+
+/**
+ * Вернуть массив с информацией о Пользователе
+ */
+function ext_user_get_user_info($user = null)
+{
+  if (empty($user)) $user = $GLOBALS['user']->uid;
+  $key = $user->uid ?? $user;
+  $result = &drupal_static(__FUNCTION__ . serialize($key));
+
+  if (empty($result)) {
+    $account = is_numeric($user) ? user_load($user) : $user;
+
+    $label = t('User');
+    $email = $account->mail;
+
+    if (!empty($account->uid)) {
+      $result = [
+        'id' => $account->uid,
+        'status' => $account->status,
+        'label' => $label,
+        'email' => $email,
+        'url' => drupal_get_path_alias('user/' . $account->uid)
+      ];
+    }
+  }
+
+  return $result;
+}
+
+
+/**
+ * Привести номер телефона к стандартному виду: 7xxxxxxxxxx
+ * @param $phone
+ *
+ * @return string
+ */
+function ext_user_normalize_phone($phone)
+{
+  // убираем всё лишнее кроме цифр
+  $phone = preg_replace('/[^\d]/', '', trim($phone));
+  // заменить первую 8 на 7
+  $phone = preg_replace('/^8(\d+)/', '7$1', $phone);
+
+  return $phone;
+}
+
+
+/**
+ * Проверить, просматривает ли Пользователь свой аккаунт
+ */
+function user_own_account()
+{
+  return !empty($GLOBALS['user']->uid) && $GLOBALS['user']->uid == arg(1);
+}
+
+
