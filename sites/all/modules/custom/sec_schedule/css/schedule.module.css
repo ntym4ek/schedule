@@ -252,8 +252,7 @@
   .room .room-content {
     flex: 1 0 auto;
     display: flex;
-    flex-direction: column;
-    height: 100%; }
+    flex-direction: column; }
   .room .room-event {
     background: #213A6E;
     color: white;

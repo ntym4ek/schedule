@@ -8,40 +8,40 @@ function schedule_theme()
   return array(
     'schedule_room_page' => array(
       'variables' => array('room' => NULL),
-      'template' => 'templates/schedule-room-page',
+      'template' => 'templates/schedule/schedule-room-page',
     ),
     'schedule_room_content' => array(
       'variables' => array('room' => NULL),
-      'template' => 'templates/schedule-room-content',
+      'template' => 'templates/schedule/schedule-room-content',
     ),
 
     'schedule_page' => array(
       'variables' => array('content' => NULL),
-      'template' => 'templates/schedule-page',
+      'template' => 'templates/schedule/schedule-page',
     ),
     'schedule_block_1' => array(
       'variables' => array('content' => NULL),
-      'template' => 'templates/schedule-block-1',
+      'template' => 'templates/schedule/schedule-block-1',
     ),
     'schedule_block_2' => array(
       'variables' => array('content' => NULL),
-      'template' => 'templates/schedule-block-2',
+      'template' => 'templates/schedule/schedule-block-2',
     ),
     'schedule_block_3' => array(
       'variables' => array('content' => NULL),
-      'template' => 'templates/schedule-block-3',
+      'template' => 'templates/schedule/schedule-block-3',
     ),
     'schedule_block_4' => array(
       'variables' => array('content' => NULL),
-      'template' => 'templates/schedule-block-4',
+      'template' => 'templates/schedule/schedule-block-4',
     ),
     'schedule_block_5' => array(
       'variables' => array('content' => NULL),
-      'template' => 'templates/schedule-block-5',
+      'template' => 'templates/schedule/schedule-block-5',
     ),
     'schedule_block_6' => array(
       'variables' => array('content' => NULL),
-      'template' => 'templates/schedule-block-6',
+      'template' => 'templates/schedule/schedule-block-6',
     ),
   );
 }
