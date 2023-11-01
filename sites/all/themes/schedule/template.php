@@ -6,6 +6,14 @@
 function schedule_theme()
 {
   return array(
+    'schedule_page' => array(
+      'variables' => array('content' => NULL),
+      'template' => 'templates/schedule/schedule-page',
+    ),
+    'schedule_page_room_block' => array(
+      'variables' => array('room' => null, 'is_admin' => null),
+      'template' => 'templates/schedule/schedule-page-room-block',
+    ),
     'schedule_room_page' => array(
       'variables' => array('room' => NULL),
       'template' => 'templates/schedule/schedule-room-page',
@@ -13,35 +21,6 @@ function schedule_theme()
     'schedule_room_content' => array(
       'variables' => array('room' => NULL),
       'template' => 'templates/schedule/schedule-room-content',
-    ),
-
-    'schedule_page' => array(
-      'variables' => array('content' => NULL),
-      'template' => 'templates/schedule/schedule-page',
-    ),
-    'schedule_block_1' => array(
-      'variables' => array('content' => NULL),
-      'template' => 'templates/schedule/schedule-block-1',
-    ),
-    'schedule_block_2' => array(
-      'variables' => array('content' => NULL),
-      'template' => 'templates/schedule/schedule-block-2',
-    ),
-    'schedule_block_3' => array(
-      'variables' => array('content' => NULL),
-      'template' => 'templates/schedule/schedule-block-3',
-    ),
-    'schedule_block_4' => array(
-      'variables' => array('content' => NULL),
-      'template' => 'templates/schedule/schedule-block-4',
-    ),
-    'schedule_block_5' => array(
-      'variables' => array('content' => NULL),
-      'template' => 'templates/schedule/schedule-block-5',
-    ),
-    'schedule_block_6' => array(
-      'variables' => array('content' => NULL),
-      'template' => 'templates/schedule/schedule-block-6',
     ),
   );
 }

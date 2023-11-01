@@ -1,30 +1,16 @@
 <?php
 
-const ROOM1 = 1;  // этаж 1, комната 1
-const ROOM2 = 3;  // этаж 1, комната 2
-const ROOM3 = 6;  // конференц
-const ROOM4 = 2;  // этаж 2, комната 1
-const ROOM5 = 4;  // этаж 2, комната 2
-const ROOM6 = 5;  // лаборатория
-
-// время в минутах до начала и после начала
-// в течение которых выводить События в серую зону
-const TIME_TO_FOOTER = 15;
-
-
 /**
  * Implements hook_init()
  */
 function schedule_init()
 {
-  if (!$_GET['q']) drupal_init_path();
-
   // отключаем кеширование определенных страниц
   // и разрешаем доступ только с корп ip
   if (arg(0) == 'schedule') {
     $GLOBALS['conf']['cache'] = 0;
     if (!in_array($GLOBALS["user"]->hostname, ['127.0.0.1', '77.72.142.170', '85.93.54.94', '188.170.106.46'])) {
-      watchdog('ip block', 'IP <pre>@v</pre>', array('@v' => $GLOBALS["user"]->hostname), WATCHDOG_INFO);
+//      watchdog('ip block', 'IP <pre>@v</pre>', array('@v' => $GLOBALS["user"]->hostname), WATCHDOG_INFO);
       drupal_not_found();
     }
   }
@@ -65,13 +51,11 @@ function schedule_menu()
 /**
  * menu callback
  */
-function schedule_room_page_callback($room_num, $ajax)
+function schedule_room_page_callback($room_id, $ajax)
 {
-  $schedule = schedule_get_events_by_date(24 * 60);
+  $schedule = schedule_get_rooms_with_events(24 * 60);
 
-  if (isset($schedule[constant('ROOM' . $room_num)])) {
-    $room = $schedule[constant('ROOM' . $room_num)];
-  }
+  $room = $schedule['rooms'][$room_id] ?? '';
 
   if ($ajax == 'ajax') {
     $result = array(
@@ -93,19 +77,19 @@ function schedule_room_page_callback($room_num, $ajax)
 function schedule_page_callback($ajax)
 {
   if ($ajax == 'ajax') {
-    $content = schedule_get_events_by_date(TIME_TO_FOOTER);
+    $content = schedule_get_rooms_with_events();
 
-    $result = array(
-      '#type' => 'ajax',
-      '#commands' => [
-        ajax_command_invoke('.block-1', 'replaceWith', [theme('schedule_block_1', ['content' => $content])]),
-        ajax_command_invoke('.block-2', 'replaceWith', [theme('schedule_block_2', ['content' => $content])]),
-        ajax_command_invoke('.block-3', 'replaceWith', [theme('schedule_block_3', ['content' => $content])]),
-        ajax_command_invoke('.block-4', 'replaceWith', [theme('schedule_block_4', ['content' => $content])]),
-        ajax_command_invoke('.block-5', 'replaceWith', [theme('schedule_block_5', ['content' => $content])]),
-        ajax_command_invoke('.block-6', 'replaceWith', [theme('schedule_block_6', ['content' => $content])]),
-      ],
-    );
+    $result = ['#type' => 'ajax', '#commands' => []];
+
+    $rooms = taxonomy_get_tree(taxonomy_vocabulary_machine_name_load('rooms')->vid);
+    foreach($rooms as $room) {
+      $room_wr = entity_metadata_wrapper('taxonomy_term', $room->tid);
+      if ($room_wr->field_status->value()) {
+        $html = theme('schedule_page_room_block', ['room' => $content['rooms'][$room->tid], 'is_admin' => $content['admin']]);
+        $result['#commands'][] = ajax_command_invoke('.room-' . $content['rooms'][$room->tid]['index'], 'replaceWith', [$html]);
+      }
+    }
+
     ajax_deliver($result);
     drupal_exit();
   } else {
@@ -113,7 +97,7 @@ function schedule_page_callback($ajax)
   }
 }
 
-function schedule_get_events_by_date($closest_event_remain_time)
+function schedule_get_rooms_with_events()
 {
   $content = [
     'admin' => user_has_role(MANAGER_RID),
@@ -125,8 +109,10 @@ function schedule_get_events_by_date($closest_event_remain_time)
   // массив комнат
   if ($rooms = taxonomy_get_tree(taxonomy_vocabulary_machine_name_load('rooms')->vid, 0 ,null, true)) {
     foreach ($rooms as $room) {
-      $content[$room->tid] = [
+      $content['rooms'][$room->tid] = [
+        'id' => $room->tid,
         'title' => $room->name,
+        'index' => $room->weight+1,
         'floor' => $room->field_floor['und'][0]['value'],
         'floor_text' => trim($field_floor_allowed_values[$room->field_floor['und'][0]['value']]),
       ];
@@ -135,11 +121,11 @@ function schedule_get_events_by_date($closest_event_remain_time)
 
   // выбрать все текущие или идущие события на сегодняшний день
   $now = REQUEST_TIME;
-  if ($events = shedule_get_events_by_date($now, false)) {
+  if ($events = schedule_get_events_by_date($now, false)) {
     foreach ($events as $eid => $event) {
       $room_id = $event->field_room_tid;
-      if (!isset($content[$room_id]['events']) || count($content[$room_id]['events']) < 3) {
-        $content[$room_id]['events'][$event->field_period_value] = [
+      if (!isset($content['rooms'][$room_id]['events']) || count($content['rooms'][$room_id]['events']) < 3) {
+        $content['rooms'][$room_id]['events'][$event->field_period_value] = [
           'eid' => $eid,
           'title' => $event->title,
           'description' => $event->body_value,
@@ -153,7 +139,7 @@ function schedule_get_events_by_date($closest_event_remain_time)
       }
     }
 
-    ksort($content[$room_id]['events']);
+    ksort($content['rooms'][$room_id]['events']);
   }
 
   return $content;
@@ -166,7 +152,7 @@ function schedule_get_events_by_date($closest_event_remain_time)
  * @param bool $all - все или за исключением прошедших
  * @return array
  */
-function shedule_get_events_by_date($date, $all = true)
+function schedule_get_events_by_date($date, $all = true)
 {
     $query = db_select('node', 'n');
     $query->condition('n.type', 'room_event');
