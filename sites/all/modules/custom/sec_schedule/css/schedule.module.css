@@ -133,52 +133,20 @@
 
 .summary {
   display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
+  flex-direction: column;
   height: 100%;
   max-width: 100%; }
-  .summary .header {
-    flex: 100%;
-    height: 20rem;
+  .summary > .header {
+    flex: 0 0 18rem;
     display: flex;
-    padding: 4rem 9rem 2rem; }
-    .summary .header .group {
+    padding: 2rem 9rem; }
+    .summary > .header .group {
       margin: 0; }
-    .summary .header .block {
-      margin: 0; }
-      .summary .header .block .content {
-        color: #333;
-        background: white;
-        display: flex; }
-      .summary .header .block .event {
-        display: flex;
-        align-items: center;
-        flex: 0 0 auto;
-        margin-right: 10rem; }
-      .summary .header .block .row1 {
-        flex: auto; }
-      .summary .header .block .line1 {
-        font-size: 6rem;
-        line-height: 1; }
-      .summary .header .block .line2 {
-        font-size: 4rem;
-        white-space: nowrap; }
-      .summary .header .block .row2 {
-        display: flex;
-        font-size: 10rem;
-        flex: 0 0 auto;
-        padding-left: 2rem; }
-        .summary .header .block .row2 i.fa-long-arrow-alt-left {
-          overflow: hidden;
-          width: 5rem; }
-        .summary .header .block .row2 i.fa-running,
-        .summary .header .block .row2 i.fa-walking {
-          margin-left: 1rem; }
-        .summary .header .block .row2 i.fa-running {
-          animation: blinker 2s linear infinite; }
-@keyframes blinker {
-  50% {
-    opacity: 0; } }
+  .summary > .content {
+    flex: 1 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start; }
   .summary .column-a .content .row1,
   .summary .column-b .content .row1 {
     flex: 0 0 1px;
@@ -200,24 +168,14 @@
     flex: 75%;
     display: flex;
     flex-direction: column;
-    height: 85%; }
+    height: 100%; }
     .summary .column-a .group {
       flex: 50%; }
-      .summary .column-a .group .block {
-        height: 100%; }
-        .summary .column-a .group .block:first-child {
-          margin-left: 0; }
-    .summary .column-a .group-a .block {
-      flex: 50%; }
-    .summary .column-a .group-b .block {
-      flex: 33.3%; }
   .summary .column-b {
     flex: 25%;
     display: flex;
     flex-direction: column;
-    height: 85%; }
-    .summary .column-b .block {
-      margin-right: 0; }
+    height: 100%; }
 
 .room {
   display: flex;
@@ -232,9 +190,9 @@
   .room .block-wrap {
     display: flex; }
   .room .room-header {
-    flex: 0 0 20rem;
+    flex: 0 0 18rem;
     position: relative;
-    padding: 4rem 9rem 2rem; }
+    padding: 2rem 9rem; }
     .room .room-header .block-wrap {
       height: 100%; }
     .room .room-header .block-i {
@@ -317,8 +275,5 @@
       margin-bottom: 5px; }
     .room .room-footer .line3 {
       font-size: 6rem; }
-  .room .block {
-    display: flex;
-    position: relative; }
 
 /*# sourceMappingURL=schedule.module.css.map */

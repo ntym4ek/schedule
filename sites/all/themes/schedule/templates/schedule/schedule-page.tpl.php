@@ -19,7 +19,8 @@
       </div>
     </div>
 
-    <div class="column-a">
+    <div class="content">
+      <div class="column-a">
 
       <div class="group group-a">
         <div class="block-1 room-block">
@@ -48,13 +49,14 @@
       </div>
     </div>
 
-    <div class="column-b">
+      <div class="column-b">
       <div class="group">
         <div class="block-3 room-block">
           <div class="header"></div>
           <div class="content"></div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </div>

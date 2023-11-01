@@ -864,7 +864,8 @@ img {
 
 html {
   height: 100%;
-  font-size: 12px; }
+  font-size: 12px;
+  overflow-y: scroll; }
   @media only screen and (min-width: 360px) {
     html {
       font-size: 14px; } }
@@ -890,7 +891,6 @@ body {
   color: #333;
   line-height: 1.22;
   background-color: #F8F7F4;
-  overflow-y: scroll;
   position: relative;
   min-height: 100%; }
 
