@@ -122,44 +122,10 @@ html {
     display: flex;
     padding: 2rem 9rem;
     .group { margin: 0; }
-    //.block {
-    //  margin: 0;
-    //  .content {
-    //    color: #333;
-    //    background: white;
-    //    display: flex;
-    //  }
-    //  .event {
-    //    display: flex; align-items: center;
-    //    flex: 0 0 auto;
-    //    margin-right: 10rem;
-    //  }
-    //  .row1 { flex: auto; }
-    //  .line1 { font-size: 6rem; line-height: 1; }
-    //  .line2 { font-size: 4rem; white-space: nowrap; }
-    //  .row2 {
-    //    display: flex;
-    //    font-size: 10rem;
-    //    flex: 0 0 auto;
-    //    padding-left: 2rem;
-    //    i.fa-long-arrow-alt-left {
-    //      overflow: hidden;
-    //      width: 5rem;
-    //    }
-    //    i.fa-running,
-    //    i.fa-walking { margin-left: 1rem; }
-    //    i.fa-running {
-    //      animation: blinker 2s linear infinite;
-    //      @keyframes blinker {
-    //        50% { opacity: 0; }
-    //      }
-    //    }
-    //  }
-    //}
   }
   > .content {
     flex: 1 0 auto;
-    display: flex; flex-wrap: wrap; align-content: flex-start;
+    display: flex; align-content: flex-start;
   }
   .column-a,
   .column-b {

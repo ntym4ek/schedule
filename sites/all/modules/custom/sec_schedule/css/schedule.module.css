@@ -145,7 +145,6 @@
   .summary > .content {
     flex: 1 0 auto;
     display: flex;
-    flex-wrap: wrap;
     align-content: flex-start; }
   .summary .column-a .content .row1,
   .summary .column-b .content .row1 {
