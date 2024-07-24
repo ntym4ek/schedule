@@ -11,6 +11,130 @@ body {
   .page-schedule { overflow: hidden; }
 }
 
+.page-header {
+  box-shadow: none;
+  position: absolute; top: 45px; left: 0; right: 0; z-index: 10;
+  padding: 0;
+  .container { padding: 0 1rem; }
+  .header-wr {
+    display: flex;
+    width: 100%; height: 100%;
+    &:before {
+      background-color: $brand-color;
+      content: "";
+      display: block;
+      flex: 1;
+      margin-right: -1px; // закрыть прозрачную полосу на макбуке
+    }
+    &:after {
+      background: rgba(27, 30, 40, 0.4);
+      content: "";
+      display: block;
+      flex: 1;
+    }
+  }
+  .col-1 {
+    flex: 0 0 auto;
+    padding-right: 30px;
+  }
+  .col-2 { flex: 1 0 auto; }
+  .branding {
+    display: flex; align-items: center;
+    background-color: $brand-color;
+    color: #fff; line-height: 1; text-align: center;
+    padding: 15px;
+    height: 100%; width: 270px;                     // определяет ширину брендовой части меню
+
+    a { color: inherit; }
+    .brand { flex: 1 0 auto; }
+    .name { font-size: 1.7em; font-weight: 700; text-transform: uppercase; }
+    .site-name {
+      font-size: .85em;
+      max-width: 200px;
+      margin: 0 auto;
+    }
+    .logo {
+      height: 100%;
+      flex: 0 0 41px;
+      img {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+  }
+
+  .menu-bkg {
+    display:grid; justify-content: flex-end; align-items: center;
+    background: rgba(27, 30, 40, 0.4);
+    height: 100%;
+    position: relative;
+    padding-right: 1rem;
+  }
+  .menu-wr {
+    display: flex; align-items: center;
+    height: 100%;
+    .primary-menu { flex: 1 1 auto; }
+    .language-switch { flex: 0 0 auto; }
+    .secondary-menu { flex: 0 0 auto; }
+    .icon-user { width: 1rem; }
+  }
+  .language-switch a {
+    color: #fff; transition: color 200ms;
+    &:hover { color: $menu-item-hover-color; }
+  }
+
+  @media #{$pad} {
+    .branding {
+      width: 315px;
+      padding: 15px;
+      .logo { flex: 0 0 55px; }
+    }
+    .menu-wr { padding-left: 2rem; }
+  }
+  @media #{$tablet} {
+    .menu-bkg { justify-content: normal; }
+  }
+  @media #{$laptop} {
+    height: 90px;
+    .branding {
+      font-size: 1rem;
+      padding-right: 30px;
+      width: 360px;
+    }
+    .menu {
+      .sub-menu {
+        font-size: $font-size-small;
+        border-left: 5px solid $brand-color;
+        min-width: 230px;
+        .logo { flex: 0 0 55px; }
+      }
+      > li {
+        > a, &.first > a {
+          font-weight: 500;
+          padding: 1rem 2rem;
+        }
+      }
+    }
+    .language-switch a { font-weight: 500; }
+  }
+}
+
+.page-margin {
+  min-height: 120px;
+  @media #{$tablet} {
+    min-height: 135px;
+  }
+  @media #{$laptop} {
+    min-height: 162px;
+  }
+}
+
+.page-footer {
+  .branding { height: 60px; }
+  .logo { height: 100%; }
+}
+
 .node-form {
   padding-bottom: 4rem;
   .tabledrag-toggle-weight-wrapper { display: none; }
